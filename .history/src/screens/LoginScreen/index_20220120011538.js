@@ -24,8 +24,6 @@ const LoginScreen = () => {
       const status = await voximplant.getClientState()
       if (status === Voximplant.ClientState.DISCONNECTED) {
         await voximplant.connect()
-      } else if (status === Voximplant.ClientState.LOGGED_IN) {
-        redirectHome()
       }
     }
     connect()

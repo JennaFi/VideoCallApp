@@ -12,7 +12,7 @@ import { Voximplant } from 'react-native-voximplant'
 import { ACC_NAME, APP_NAME } from '../../constants'
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('')
+  const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
   const voximplant = Voximplant.getInstance()
@@ -24,8 +24,6 @@ const LoginScreen = () => {
       const status = await voximplant.getClientState()
       if (status === Voximplant.ClientState.DISCONNECTED) {
         await voximplant.connect()
-      } else if (status === Voximplant.ClientState.LOGGED_IN) {
-        redirectHome()
       }
     }
     connect()
@@ -44,21 +42,14 @@ const LoginScreen = () => {
   }
 
   const redirectHome = () => {
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'Contacts',
-        },
-      ],
-    })
+    navigation.navigate('Contacts')
   }
 
   return (
     <View style={styles.page}>
       <TextInput
-        value={username}
-        onChangeText={setUsername}
+        value={userName}
+        onChangeText={setUserName}
         placeholder="username"
         style={styles.input}
         autoCapitalize="none"
