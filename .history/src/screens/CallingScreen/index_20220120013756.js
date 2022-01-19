@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
   Alert,
   PermissionsAndroid,
@@ -18,8 +18,6 @@ const permissions = [
 ]
 
 const CallingScreen = () => {
-  const [permissionGranted, setPermissionGranted] = useState(false)
-
   const navigation = useNavigation()
   const route = useRoute()
 
@@ -44,8 +42,6 @@ const CallingScreen = () => {
     }
     if (Platform.OS === 'android') {
       getPermissions()
-    } else {
-      setPermissionGranted(true)
     }
   }, [])
 

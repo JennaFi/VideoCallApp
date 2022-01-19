@@ -1,9 +1,8 @@
 import { useNavigation, useRoute } from '@react-navigation/native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import {
   Alert,
   PermissionsAndroid,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -12,14 +11,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CallActionBox from '../../components/CallActionBox'
 
-const permissions = [
-  PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  PermissionsAndroid.PERMISSIONS.CAMERA,
-]
-
 const CallingScreen = () => {
-  const [permissionGranted, setPermissionGranted] = useState(false)
-
   const navigation = useNavigation()
   const route = useRoute()
 
@@ -42,11 +34,7 @@ const CallingScreen = () => {
         // setPermissionGranted(true)
       }
     }
-    if (Platform.OS === 'android') {
-      getPermissions()
-    } else {
-      setPermissionGranted(true)
-    }
+    getPermissions()
   }, [])
 
   return (
