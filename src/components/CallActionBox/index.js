@@ -4,48 +4,49 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 
-const CallActionBox = () => {
+const CallActionBox = ({ onHangupPress }) => {
   const [isCameraOn, setIsCameraOn] = useState(true)
   const [isMicOn, setIsMicOn] = useState(true)
 
-  const onReverseCamera = () => {
-
-  }
+  const onReverseCamera = () => {}
   const onToggleCamera = () => {
     setIsCameraOn(currentValue => !currentValue)
-
   }
   const onToggleMicrophone = () => {
     setIsMicOn(currentValue => !currentValue)
-
   }
-  const onHangUp = () => {
+  // const onHangUp = () => {
 
-  }
+  // }
 
   return (
-   
     <View style={styles.buttonsContainer}>
-
       <Pressable onPress={onReverseCamera} style={styles.iconButton}>
-        <Ionicons name='ios-camera-reverse' size={30} color={'white'} />
+        <Ionicons name="ios-camera-reverse" size={30} color={'white'} />
       </Pressable>
 
       <Pressable onPress={onToggleCamera} style={styles.iconButton}>
-        <MaterialIcons name={isCameraOn? 'camera-off' : 'camera'} size={30} color={'white'} />
+        <MaterialIcons
+          name={isCameraOn ? 'camera-off' : 'camera'}
+          size={30}
+          color={'white'}
+        />
       </Pressable>
 
       <Pressable onPress={onToggleMicrophone} style={styles.iconButton}>
-        <MaterialIcons name={isMicOn? 'microphone-off' : 'microphone'} size={30} color={'white'} />
+        <MaterialIcons
+          name={isMicOn ? 'microphone-off' : 'microphone'}
+          size={30}
+          color={'white'}
+        />
       </Pressable>
 
-      <Pressable onPress={onHangUp} style={[styles.iconButton, {backgroundColor: 'red'}]}>
-        <MaterialIcons name='phone-hangup' size={30} color={'white'} />
+      <Pressable
+        onPress={onHangupPress}
+        style={[styles.iconButton, { backgroundColor: 'red' }]}>
+        <MaterialIcons name="phone-hangup" size={30} color={'white'} />
       </Pressable>
-      
     </View>
-
-   
   )
 }
 
