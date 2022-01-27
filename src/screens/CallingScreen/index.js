@@ -20,16 +20,19 @@ const permissions = [
 
 const CallingScreen = () => {
   const [permissionGranted, setPermissionGranted] = useState(false)
-  const [callStatus, setCallStatus] = useState('Initializing')
+  const [callStatus, setCallStatus] = useState('Initializing...')
+  const [localVideoStreamId, setLocalVideoStreamId] = useState('')
+  const [remoteVideoStreamId, setRemoteVideoStreamId] = useState('')
 
   const navigation = useNavigation()
   const route = useRoute()
 
-  const user = route?.params?.user
+  const { user, call: incomingCall, isIncomingCall } = route?.params
 
   const voximplant = Voximplant.getInstance()
 
-  const call = useRef()
+  const call = useRef(incomingCall)
+  const endpoint = useRef(null)
 
   const goBack = () => {
     navigation.goBack()
@@ -72,20 +75,47 @@ const CallingScreen = () => {
       subscribeToCallEvents()
     }
 
+    const answerCall = async () => {
+      subscribeToCallEvents()
+      endpoint.current = call.current.getEndpoints()[0]
+      subscribeToEndpointEvent()
+      call.current.answer(callSettings)
+    }
+
     const subscribeToCallEvents = () => {
-      call.current(Voximplant.CallEvents.Failed, callEvent => {
+      call.current.on(Voximplant.CallEvents.Failed, callEvent => {
         showError(callEvent.reason)
       })
-      call.current(Voximplant.CallEvents.ProgressToneStart, callEvent => {
+      call.current.on(Voximplant.CallEvents.ProgressToneStart, callEvent => {
         setCallStatus('Calling...')
       })
-      call.current(Voximplant.CallEvents.Connected, callEvent => {
+      call.current.on(Voximplant.CallEvents.Connected, callEvent => {
         setCallStatus('Connected')
       })
-      call.current(Voximplant.CallEvents.Disconnected, callEvent => {
+      call.current.on(Voximplant.CallEvents.Disconnected, callEvent => {
         navigation.navigate('Contacts')
       })
+      call.current.on(
+        Voximplant.CallEvents.LocalVideoStreamAdded,
+        callEvent => {
+          setLocalVideoStreamId(callEvent.videoStream.id)
+        },
+      )
+      call.current.on(Voximplant.CallEvents.EndpointAdded, callEvent => {
+        endpoint.current = callEvent.endpoint
+        subscribeToEndpointEvent()
+      })
     }
+
+    const subscribeToEndpointEvent = async () => {
+      endpoint.current.on(
+        Voximplant.EndpointEvents.RemoteVideoStreamAdded,
+        endpointEvent => {
+          setRemoteVideoStreamId(endpointEvent.videoStream.id)
+        },
+      )
+    }
+
     const showError = reason => {
       Alert.alert('Call failed', `Reason: ${reason}`, [
         {
@@ -94,7 +124,12 @@ const CallingScreen = () => {
         },
       ])
     }
-    makeCall()
+
+    if (isIncomingCall) {
+      answerCall()
+    } else {
+      makeCall()
+    }
 
     return () => {
       call.current.off(Voximplant.CallEvents.Failed)
@@ -114,6 +149,16 @@ const CallingScreen = () => {
         <Ionicons name="chevron-back" color="white" size={25} />
       </Pressable>
 
+      <Voximplant.VideoView
+        videoStreamId={localVideoStreamId}
+        style={styles.localVideo}
+      />
+
+      <Voximplant.VideoView
+        videoStreamId={remoteVideoStreamId}
+        style={styles.remoteVideo}
+      />
+
       <View style={styles.cameraPreview}>
         <Text style={styles.name}>{user?.user_display_name}</Text>
         <Text style={styles.phoneNumber}>{callStatus}</Text>
@@ -124,42 +169,52 @@ const CallingScreen = () => {
   )
 }
 
-
-
 const styles = StyleSheet.create({
   page: {
     height: '100%',
     backgroundColor: '#7b4e80',
-
   },
   cameraPreview: {
     flex: 1,
     alignItems: 'center',
     paddingTop: 10,
-    paddingHorizontal: 10
-    
-
+    paddingHorizontal: 10,
   },
   name: {
     fontSize: 30,
     fontWeight: 'bold',
     color: 'white',
     marginTop: 50,
-    marginBottom: 15
-    
-  
+    marginBottom: 15,
   },
   phoneNumber: {
     fontSize: 25,
-    color: 'white'
-
+    color: 'white',
   },
   backButton: {
     position: 'absolute',
     top: 50,
     left: 20,
-    zIndex: 10
-  }
+    zIndex: 10,
+  },
+  localVideo: {
+    width: 100,
+    height: 150,
+    backgroundColor: '#ffff6e',
+    borderRadius: 10,
+    position: 'absolute',
+    right: 10,
+    top: 100,
+  },
+  remoteVideo: {
+    width: 200,
+    height: 300,
+    backgroundColor: '#ffff6e',
+    borderRadius: 10,
+    position: 'absolute',
+    left: 10,
+    top: 100,
+  },
 })
 
 export default CallingScreen

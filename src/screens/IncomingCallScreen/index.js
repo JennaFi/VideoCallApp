@@ -34,6 +34,10 @@ const IncomingCallScreen = () => {
     call.decline()
   }
   const onAccept = () => {
+    navigation.navigate('Calling', {
+      call,
+      isIncomingCall: true,
+    })
     console.warn('onAccept')
   }
 
