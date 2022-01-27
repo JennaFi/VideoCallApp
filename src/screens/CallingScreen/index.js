@@ -207,13 +207,13 @@ const styles = StyleSheet.create({
     top: 100,
   },
   remoteVideo: {
-    width: 200,
-    height: 300,
     backgroundColor: '#ffff6e',
     borderRadius: 10,
     position: 'absolute',
-    left: 10,
-    top: 100,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 100,
   },
 })
 
